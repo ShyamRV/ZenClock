@@ -33,6 +33,7 @@ const btnModeTimer = document.getElementById('mode-timer');
 // Action Buttons
 const btnStart = document.getElementById('action-start');
 const btnReset = document.getElementById('action-reset');
+const btnFullscreen = document.getElementById('toggle-fullscreen');
 
 // Inputs
 const inputH = document.getElementById('input-h') as HTMLInputElement;
@@ -141,6 +142,26 @@ function switchMode(newMode: AppMode) {
     updateDisplay();
 }
 
+// Fullscreen Logic
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
+// Listen for fullscreen changes to update button text
+document.addEventListener('fullscreenchange', () => {
+    if (btnFullscreen) {
+        btnFullscreen.textContent = document.fullscreenElement ? 'Exit Full' : 'Fullscreen';
+    }
+});
+
 // Interaction Listeners
 window.addEventListener('mousemove', showControls);
 window.addEventListener('mousedown', showControls);
@@ -150,6 +171,11 @@ window.addEventListener('keydown', showControls);
 btnModeClock?.addEventListener('click', () => switchMode('CLOCK'));
 btnModeStopwatch?.addEventListener('click', () => switchMode('STOPWATCH'));
 btnModeTimer?.addEventListener('click', () => switchMode('TIMER'));
+
+btnFullscreen?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleFullscreen();
+});
 
 btnStart?.addEventListener('click', () => {
     if (currentMode === 'STOPWATCH') {
